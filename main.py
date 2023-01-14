@@ -5,7 +5,7 @@ import pytz
 header = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.25 Safari/537.36 Core/1.70.3868.400 QQBrowser/10.8.4394.400"
 }  # 发送头信息
-today = str(datetime.date.today(tz=pytz.timezone('Asia/Shanghai')))
+today = str(datetime.date.now(tz=pytz.timezone('Asia/Shanghai')).strftime('%Y-%m-%d)
 [year, month, day] = today.split('-')
 if len(month) == 1:
     month = "0" + month
