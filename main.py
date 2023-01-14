@@ -1,10 +1,11 @@
 import requests
 import datetime
+import pytz
 
 header = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.25 Safari/537.36 Core/1.70.3868.400 QQBrowser/10.8.4394.400"
 }  # 发送头信息
-today = str(datetime.date.today())
+today = str(datetime.date.today(tz=pytz.timezone('Asia/Shanghai')))
 [year, month, day] = today.split('-')
 if len(month) == 1:
     month = "0" + month
@@ -41,9 +42,4 @@ response = client.put_object(
     StorageClass='STANDARD',
     ContentType='text/html; charset=utf-8'
 )
-if response["ETag"] is not None:
-    try:
-        url = 'https://sc.ftqq.com/SCT89587TadBaqqoSlrs5X1cNBnTUOghV.send'
-        requests.post(url, data={'text': "成功"})
-    except Exception as e:
-        print("错误")
+
