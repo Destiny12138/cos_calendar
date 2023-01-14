@@ -40,6 +40,6 @@ response = client.put_object(
     Body=byte,
     Key="cos_calendar.jpg",
     StorageClass='STANDARD',
-    ContentType='text/html; charset=utf-8'
+    ContentType='image/jpeg'
 )
 
