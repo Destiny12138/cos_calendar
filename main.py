@@ -44,7 +44,7 @@ response = client.put_object(
     ContentType='image/jpeg'
 )
 req = requests.get(
-    url="https://api.iwyu.com/API/moyu", headers=header)
+    url="http://api.iwyu.com/API/moyu", headers=header)
 byte = req.content
 print(byte)
 response = client.put_object(
