@@ -44,13 +44,13 @@ response = client.put_object(
     ContentType='image/jpeg'
 )
 
-req = requests.get(
-    url="https://api.iwyu.com/API/60s", headers=header)
-byte = req.content
-response = client.put_object(
-    Bucket='tuchuang-1305198491',  # Bucket 由 BucketName-APPID 组成
-    Body=byte,
-    Key="60s_calendar.png",
-    StorageClass='STANDARD',
-    ContentType='image/jpeg'
-)
+# req = requests.get(
+#     url="https://api.iwyu.com/API/60s", headers=header)
+# byte = req.content
+# response = client.put_object(
+#     Bucket='tuchuang-1305198491',  # Bucket 由 BucketName-APPID 组成
+#     Body=byte,
+#     Key="60s_calendar.png",
+#     StorageClass='STANDARD',
+#     ContentType='image/jpeg'
+# )
