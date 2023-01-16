@@ -50,7 +50,7 @@ response = client.put_object(
 response2 = client.put_object(
     Bucket='tuchuang-1305198491',  # Bucket 由 BucketName-APPID 组成
     Body=byte2,
-    Key="moyu_calendar.png",
+    Key="moyu_calendar.jpg",
     StorageClass='STANDARD',
     ContentType='image/jpeg'
 )
