@@ -44,6 +44,7 @@ response = client.put_object(
 req = requests.get(
     url="https://api.iwyu.com/API/moyu", headers=header)
 byte = req.content
+print(byte)
 response = client.put_object(
     Bucket='tuchuang-1305198491',  # Bucket 由 BucketName-APPID 组成
     Body=byte,
