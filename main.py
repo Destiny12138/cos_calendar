@@ -43,17 +43,7 @@ response = client.put_object(
     StorageClass='STANDARD',
     ContentType='image/jpeg'
 )
-req = requests.get(
-    url="http://api.iwyu.com/API/moyu", headers=header)
-byte = req.content
-print(byte)
-response = client.put_object(
-    Bucket='tuchuang-1305198491',  # Bucket 由 BucketName-APPID 组成
-    Body=byte,
-    Key="moyu_calendar.png",
-    StorageClass='STANDARD',
-    ContentType='image/jpeg'
-)
+
 req = requests.get(
     url="https://api.iwyu.com/API/60s", headers=header)
 byte = req.content
