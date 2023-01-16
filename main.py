@@ -15,13 +15,6 @@ req = requests.get(
     url=f"http://img.owspace.com/Public/uploads/Download/{year}/{month + day}.jpg", headers=header)
 byte = req.content
 
-req3 = requests.get(
-    url="https://api.iwyu.com/API/60s", headers=header)
-byte3 = req3.content
-req2 = requests.get(
-    url="https://api.iwyu.com/API/moyu", headers=header)
-byte2 = req2.content
-
 # -*- coding=utf-8
 from qcloud_cos import CosConfig
 from qcloud_cos import CosS3Client
@@ -48,16 +41,22 @@ response = client.put_object(
     StorageClass='STANDARD',
     ContentType='image/jpeg'
 )
-response2 = client.put_object(
+req = requests.get(
+    url="https://api.iwyu.com/API/moyu", headers=header)
+byte = req.content
+response = client.put_object(
     Bucket='tuchuang-1305198491',  # Bucket 由 BucketName-APPID 组成
-    Body=byte2,
+    Body=byte,
     Key="moyu_calendar.png",
     StorageClass='STANDARD',
     ContentType='image/jpeg'
 )
-response2 = client.put_object(
+req = requests.get(
+    url="https://api.iwyu.com/API/60s", headers=header)
+byte = req.content
+response = client.put_object(
     Bucket='tuchuang-1305198491',  # Bucket 由 BucketName-APPID 组成
-    Body=byte3,
+    Body=byte,
     Key="60s_calendar.png",
     StorageClass='STANDARD',
     ContentType='image/jpeg'
