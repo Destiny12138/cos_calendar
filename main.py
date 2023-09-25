@@ -40,7 +40,7 @@ client = CosS3Client(config)
 response = client.put_object(
     Bucket=bucket_name,  # Bucket 由 BucketName-APPID 组成
     Body=byte,
-    Key="cos_calendar.jpg",
+    Key="/DailyChange/cos_calendar.jpg",
     StorageClass='STANDARD',
     ContentType='image/jpeg'
 )
