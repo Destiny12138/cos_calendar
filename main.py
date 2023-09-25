@@ -9,6 +9,7 @@ header = {
 }  # 发送头信息
 today = str(datetime.datetime.now(tz=pytz.timezone('Asia/Shanghai')).strftime('%Y-%m-%d'))
 [year, month, day] = today.split('-')
+print([year, month, day])
 if len(month) == 1:
     month = "0" + month
 if len(day) == 1:
