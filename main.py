@@ -68,6 +68,7 @@ req = requests.get(
     url=f"https://api.vvhan.com/api/moyu", headers=header)
 byte = req.content
 key = f'DailyChange/calendar/moyu{year}{month + day}.png'
+token = q.upload_token(bucket_name, key, 3600)
 ret1, info1 = put_data(token, key, byte)
 print(info1)
 # bucket = BucketManager(q)
