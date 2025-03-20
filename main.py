@@ -66,10 +66,10 @@ header = {
 }  # 发送头信息
 req = requests.get(
     url=f"https://api.vvhan.com/api/moyu", headers=header)
-byte = req.content
-key = f'DailyChange/calendar/moyu{year}{month + day}.png'
-token = q.upload_token(bucket_name, key, 3600)
-ret1, info1 = put_data(token, key, byte)
+byte1 = req.content
+key1= f'DailyChange/calendar/moyu{year}{month + day}.png'
+token1 = q.upload_token(bucket_name, key1, 3600)
+ret1, info1 = put_data(token1, key1, byte1)
 print(info1)
 # bucket = BucketManager(q)
 # ops = build_batch_delete(bucket_name, ["DailyChange/calendar/屏幕截图(3).png"])
