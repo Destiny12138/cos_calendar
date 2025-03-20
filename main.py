@@ -60,7 +60,16 @@ token = q.upload_token(bucket_name, key, 3600)
 
 ret, info = put_data(token, key, byte)
 print(info)
-
+# 摸鱼日历
+header = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.25 Safari/537.36 Core/1.70.3868.400 QQBrowser/10.8.4394.400"
+}  # 发送头信息
+req = requests.get(
+    url=f"https://api.vvhan.com/api/moyu", headers=header)
+byte = req.content
+key = f'DailyChange/calendar/moyu{year}{month + day}.jpg'
+ret1, info1 = put_data(token, key, byte)
+print(info1)
 # bucket = BucketManager(q)
 # ops = build_batch_delete(bucket_name, ["DailyChange/calendar/屏幕截图(3).png"])
 # ret, info = bucket.batch(ops)
