@@ -4,4 +4,3 @@
 
 Actions启动
 fork后在Setting——>Secret中设置变量COS_SECRET_ID, COS_SECRET_KEY, COS_BUCKET_NAME并添加自己的信息即可
-
