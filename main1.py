@@ -26,7 +26,7 @@ header = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.25 Safari/537.36 Core/1.70.3868.400 QQBrowser/10.8.4394.400"
 }  # 发送头信息
 req = requests.get(
-    url=f"https://api.vvhan.com/api/moyu", headers=header)
+    url=f"https://api.yviii.com/moyu/moyu.php", headers=header)
 byte1 = req.content
 key1= f'DailyChange/calendar/moyu{year}{month + day}.png'
 token1 = q.upload_token(bucket_name, key1, 3600)
