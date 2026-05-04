@@ -1,67 +1,97 @@
-import requests
 import datetime
-import pytz
 import os
+
+import pytz
+import requests
+from qiniu import Auth, BucketManager, put_data
+
 
 header = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.25 Safari/537.36 Core/1.70.3868.400 QQBrowser/10.8.4394.400",
     "x-app-id": "SO1EJGmNgCtmpcPF",
     "x-version": "1.0.0"
 }  # 发送头信息
-today = str(datetime.datetime.now(tz=pytz.timezone('Asia/Shanghai')).strftime('%Y-%m-%d'))
-[year, month, day] = today.split('-')
-print([year, month, day])
-if len(month) == 1:
-    month = "0" + month
-if len(day) == 1:
-    day = "0" + day
-req = requests.get(
-    url=f"http://img.owspace.com/Public/uploads/Download/{year}/{month + day}.jpg", headers=header)
-byte = req.content
+image_prefix = "DailyChange/calendar/ows"
+image_extension = ".jpg"
+min_image_bytes = 10 * 1024
+upload_token_expires = 3600
 
-# from qcloud_cos import CosConfig
-# from qcloud_cos import CosS3Client
-# import sys
-# import os
-# import logging
-#
-# # 正常情况日志级别使用INFO，需要定位时可以修改为DEBUG，此时SDK会打印和服务端的通信信息
-# logging.basicConfig(level=logging.INFO, stream=sys.stdout)
-#
-# secret_id = os.environ["COS_SECRET_ID"]
-# secret_key = os.environ["COS_SECRET_KEY"]
-# bucket_name = os.environ["COS_BUCKET_NAME"]
-# region = 'ap-beijing'
-# token = None
-# scheme = 'https'
-#
-# config = CosConfig(Region=region, SecretId=secret_id, SecretKey=secret_key, Token=token, Scheme=scheme)
-# client = CosS3Client(config)
-# response = client.put_object(
-#     Bucket=bucket_name,  # Bucket 由 BucketName-APPID 组成
-#     Body=byte,
-#     Key="DailyChange/cos_calendar.jpg",
-#     StorageClass='STANDARD',
-#     ContentType='image/jpeg'
-# )
-from qiniu import Auth, put_data, build_batch_delete,BucketManager
-import qiniu.config
-#需要填写你的 Access Key 和 Secret Key
+date_code = datetime.datetime.now(tz=pytz.timezone("Asia/Shanghai")).strftime("%Y%m%d")
+year = date_code[:4]
+month = date_code[4:6]
+day = date_code[6:8]
+print([year, month, day])
+
 access_key = os.environ["ACCESS_KEY"]
 secret_key = os.environ["SECRET_KEY"]
-#构建鉴权对象
 q = Auth(access_key, secret_key)
-#要上传的空间
 bucket_name = os.environ["BUCKET_NAME"]
-#上传后保存的文件名
-key = f'DailyChange/calendar/ows{year}{month + day}.jpg'
-#生成上传 Token，可以指定过期时间等
-token = q.upload_token(bucket_name, key, 3600)
+bucket = BucketManager(q)
 
-ret, info = put_data(token, key, byte)
-print(info)
 
-# bucket = BucketManager(q)
-# ops = build_batch_delete(bucket_name, ["DailyChange/calendar/屏幕截图(3).png"])
-# ret, info = bucket.batch(ops)
-# print(info)
+def is_real_jpeg(response):
+    image_data = response.content
+    if response.status_code != 200:
+        print(f"单向历下载失败: HTTP {response.status_code}")
+        return False
+    if len(image_data) < min_image_bytes:
+        print(f"单向历下载内容过小: {len(image_data)} bytes")
+        return False
+    if not image_data.startswith(b"\xff\xd8\xff"):
+        print("单向历下载内容不是 JPEG 图片")
+        return False
+    return True
+
+
+def upload_image(key, image_data):
+    token = q.upload_token(bucket_name, key, upload_token_expires)
+    ret, info = put_data(token, key, image_data)
+    print(info)
+    if ret is None or getattr(info, "status_code", None) != 200:
+        raise RuntimeError(f"上传单向历图片到七牛失败: {info}")
+
+
+def find_latest_image_key(target_key):
+    marker = None
+    candidates = []
+    while True:
+        ret, eof, info = bucket.list(bucket_name, image_prefix, marker, 1000, None)
+        if ret is None:
+            raise RuntimeError(f"列举七牛单向历历史图片失败: {info}")
+        for item in ret.get("items", []):
+            key = item.get("key")
+            if not key or key == target_key or not key.endswith(image_extension):
+                continue
+            image_date = key[len(image_prefix):-len(image_extension)]
+            if len(image_date) == 8 and image_date.isdigit() and image_date < date_code:
+                candidates.append((image_date, key))
+        marker = ret.get("marker")
+        if eof or not marker:
+            break
+    if not candidates:
+        raise RuntimeError("七牛空间中没有可复制的历史单向历图片")
+    return max(candidates)[1]
+
+
+def copy_latest_image(target_key):
+    source_key = find_latest_image_key(target_key)
+    print(f"复制历史单向历图片: {source_key} -> {target_key}")
+    ret, info = bucket.copy(bucket_name, source_key, bucket_name, target_key, force="true")
+    print(info)
+    if ret is None or getattr(info, "status_code", None) != 200:
+        raise RuntimeError(f"复制七牛历史单向历图片失败: {info}")
+
+
+key = f"{image_prefix}{date_code}{image_extension}"
+url = f"http://img.owspace.com/Public/uploads/Download/{year}/{month + day}.jpg"
+
+try:
+    req = requests.get(url=url, headers=header, timeout=20)
+except requests.RequestException as exc:
+    print(f"单向历下载异常: {exc}")
+    copy_latest_image(key)
+else:
+    if is_real_jpeg(req):
+        upload_image(key, req.content)
+    else:
+        copy_latest_image(key)
