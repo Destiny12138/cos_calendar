@@ -1,0 +1,26 @@
+name: keep-alive
+
+# 定时触发：每月 1 号、15 号 08:00 UTC（北京时间当日 16:00）
+# 作用：定期推送一个空提交，重置 GitHub 60 天无活动自动停用的计时器
+on:
+  schedule:
+    - cron: '0 8 1,15 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Reset 60-day inactivity timer
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Push empty commit
+        run: |
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git commit --allow-empty -m "keep-alive: reset GitHub Actions inactivity timer"
+          git push
