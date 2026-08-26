@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Daily Submit
+name: ows
 
 # Controls when the action will run. 
 on:
@@ -37,5 +37,5 @@ jobs:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
           BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
       run: |
-        python main.py
+        python ows.py
         # 执行代码
