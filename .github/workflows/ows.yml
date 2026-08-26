@@ -7,8 +7,7 @@ on:
   workflow_dispatch:
   # Triggers the workflow on push or pull request events but only for the main branch
   schedule:
-  # 每天 16:02 UTC 触发一次，等价北京时间次日 00:02
-  - cron: '2 16 * * *'
+  - cron: '2 16,22 * * *'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
